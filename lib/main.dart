@@ -5,14 +5,13 @@ import 'package:xote_eventos/app/data/repositories/event_repository.dart';
 import 'package:xote_eventos/app/pages/home-page/app_navigation.dart';
 import 'package:xote_eventos/app/pages/stores/evento_store.dart';
 
-
 void main() {
   final HttpClient httpClient = HttpClient();
   final IEventRepository eventRepository = EventRepository(client: httpClient);
   final EventoStore eventoStore = EventoStore(repository: eventRepository, client: httpClient);
 
   runApp(
-    ChangeNotifierProvider<EventoStore>( // Adicione o tipo aqui
+    ChangeNotifierProvider<EventoStore>( 
       create: (context) => eventoStore,
       child: const MyApp(),
     ),
@@ -30,6 +29,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const AppNavigation(),
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child ?? const SizedBox.shrink(),
+          ],
+        );
+      },
     );
   }
 }

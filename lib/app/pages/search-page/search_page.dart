@@ -1,21 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:diacritic/diacritic.dart';
-import 'package:xote_eventos/app/pages/search-page/event_card.dart';
-import '/app/data/models/event_model.dart';
-import '/app/pages/stores/evento_store.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
-import 'animations.dart';  // Importando o arquivo de animações
+import 'package:diacritic/diacritic.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:xote_eventos/app/data/models/event_model.dart';
+import 'package:xote_eventos/app/pages/search-page/animations.dart';
+import 'package:xote_eventos/app/pages/stores/evento_store.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
   @override
-  _SearchPageState createState() => _SearchPageState();
+  SearchPageState createState() => SearchPageState();
 }
-
-class _SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   late List<EventModel> allEvents;
   late List<EventModel> searchResults;
@@ -25,6 +22,9 @@ class _SearchPageState extends State<SearchPage> {
   late Timer _debounce;
 
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+
+  String _selectedFilter = 'Todos'; // Variável para armazenar o filtro selecionado
+  String _selectedSort = 'Mais Proximos'; // Filtro de ordenação
 
   @override
   void initState() {
@@ -44,15 +44,43 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _fetchAllEvents() async {
     try {
       final eventoStore = Provider.of<EventoStore>(context, listen: false);
-      await eventoStore.getEventos();
+
+      // Verifica qual filtro está selecionado e chama o método apropriado
+      switch (_selectedFilter) {
+        case 'Eventos Recentes':
+          await eventoStore.getRecentEventos();
+          break;
+        case 'Eventos Pagos':
+          await eventoStore.getPaidEventos();
+          break;
+        case 'Eventos Gratuitos':
+          await eventoStore.getFreeEventos();
+          break;
+        default:
+          await eventoStore.getEventos();
+          break;
+      }
+
       setState(() {
         allEvents = eventoStore.state.value;
         searchResults = allEvents;
+        _applySorting(); // Aplica a ordenação quando os eventos são carregados
         _initializeVisibleEvents();
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Erro ao carregar eventos: ${e.toString()}')));
+    }
+  }
+
+  void _applySorting() {
+    switch (_selectedSort) {
+      case 'Mais Proximos':
+        searchResults.sort((a, b) => a.date.compareTo(b.date));
+        break;
+      case 'Mais Distantes':
+        searchResults.sort((a, b) => b.date.compareTo(a.date));
+        break;
     }
   }
 
@@ -74,7 +102,7 @@ class _SearchPageState extends State<SearchPage> {
           return removeDiacritics(event.title.toLowerCase())
               .contains(normalizedQuery);
         }).toList();
-        print("Search Results Count: ${searchResults.length}");
+        _applySorting(); // Aplica a ordenação após a pesquisa
         _resetVisibleEvents();
       });
     });
@@ -148,6 +176,64 @@ class _SearchPageState extends State<SearchPage> {
                     color: Colors.white, fontWeight: FontWeight.bold),
                 onChanged: _searchEvents,
               ),
+            ),
+            // Adicionando os Dropdowns de filtro e ordenação em uma Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: DropdownButton<String>(
+                      value: _selectedFilter,
+                      onChanged: (String? newFilter) {
+                        setState(() {
+                          _selectedFilter = newFilter ?? 'Todos';
+                          _loadingEventsFuture = _fetchAllEvents(); // Recarrega os eventos com o novo filtro
+                        });
+                      },
+                      items: <String>['Todos', 'Eventos Recentes', 'Eventos Pagos', 'Eventos Gratuitos']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: const TextStyle(color: Colors.white)),
+                        );
+                      }).toList(),
+                      dropdownColor: const Color(0xFF2F3349),
+                      iconEnabledColor: Colors.white,
+                      iconSize: 30,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8), // Espaço entre os Dropdowns
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: DropdownButton<String>(
+                      value: _selectedSort,
+                      onChanged: (String? newSort) {
+                        setState(() {
+                          _selectedSort = newSort ?? 'Mais Proximos';
+                          _applySorting(); // Aplica a ordenação ao selecionar um novo filtro
+                          _resetVisibleEvents(); // Reseta a lista visível após a ordenação
+                        });
+                      },
+                      items: <String>['Mais Proximos', 'Mais Distantes']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value, style: const TextStyle(color: Colors.white)),
+                        );
+                      }).toList(),
+                      dropdownColor: const Color(0xFF2F3349),
+                      iconEnabledColor: Colors.white,
+                      iconSize: 30,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
             ),
             Expanded(
               child: FutureBuilder<void>(

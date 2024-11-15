@@ -9,10 +9,10 @@ class RecentEventsSection extends StatefulWidget {
   const RecentEventsSection({super.key});
 
   @override
-  _RecentEventsSectionState createState() => _RecentEventsSectionState();
+  RecentEventsSectionState createState() => RecentEventsSectionState();
 }
 
-class _RecentEventsSectionState extends State<RecentEventsSection> {
+class RecentEventsSectionState extends State<RecentEventsSection> {
   late final EventoStore _eventoStore;
 
   @override

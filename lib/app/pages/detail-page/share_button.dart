@@ -7,7 +7,6 @@ class ShareButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: () {
-        // Função para compartilhar
       },
       icon: const Icon(Icons.share, color: Colors.white),
       label: const Text('Compartilhar', style: TextStyle(color: Colors.white)),

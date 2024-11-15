@@ -4,10 +4,10 @@ class NotificationIcon extends StatefulWidget {
   const NotificationIcon({super.key});
 
   @override
-  _NotificationIconState createState() => _NotificationIconState();
+  NotificationIconState createState() => NotificationIconState();
 }
 
-class _NotificationIconState extends State<NotificationIcon> {
+class NotificationIconState extends State<NotificationIcon> {
   List<String> notifications = [
     'Evento 1 está começando em breve!',
     'Evento 2 foi adicionado aos seus favoritos.',

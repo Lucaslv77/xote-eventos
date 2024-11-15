@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class ScrollMenu extends StatelessWidget {
   final List<String> menuItems;
   final List<Widget> pages;
-  final List<IconData> icons; // Adicionando uma lista de ícones
+  final List<IconData> icons; 
 
   const ScrollMenu({
     super.key,
     required this.menuItems,
     required this.pages,
-    required this.icons, // Adicionando o parâmetro para ícones
+    required this.icons, 
   });
 
   @override
@@ -40,11 +40,11 @@ class ScrollMenu extends StatelessWidget {
                       child: Icon(
                         icons[index],
                         color: Colors.white,
-                        size: 30, // Tamanho do ícone
+                        size: 30, 
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8.0), // Espaço entre o ícone e o texto
+                  const SizedBox(height: 8.0), 
                   Text(
                     menuItems[index],
                     style: const TextStyle(

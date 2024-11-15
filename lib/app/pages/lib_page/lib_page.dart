@@ -3,17 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '/app/pages/detail-page/event_detail_page.dart';
 import '/app/pages/stores/evento_store.dart';
-import '/app/widgets/CustomErrorWidget.dart';
+import '../../widgets/customErrorWidget.dart';
 import '../../widgets/LoadingWidget.dart';
 
 class LibPage extends StatefulWidget {
   const LibPage({super.key});
 
   @override
-  _LibPageState createState() => _LibPageState();
+  LibPageState createState() => LibPageState();
 }
 
-class _LibPageState extends State<LibPage> {
+class LibPageState extends State<LibPage> {
   @override
   void initState() {
     super.initState();
@@ -91,6 +91,15 @@ class _LibPageState extends State<LibPage> {
                                 width: double.infinity,
                                 height: 200, // Definido para ocupar toda a parte superior
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Exibe um widget alternativo se houver um erro no carregamento da imagem
+                                  return Container(
+                                    color: Colors.grey[300],
+                                    width: double.infinity,
+                                    height: 200,
+                                    child: const Icon(Icons.event, color: Colors.white),
+                                  );
+                                },
                               ),
                             )
                           : Container(

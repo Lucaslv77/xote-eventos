@@ -12,10 +12,10 @@ class EventDetailPage extends StatefulWidget {
   const EventDetailPage({super.key, required this.event});
 
   @override
-  _EventDetailPageState createState() => _EventDetailPageState();
+  EventDetailPageState createState() => EventDetailPageState();
 }
 
-class _EventDetailPageState extends State<EventDetailPage> {
+class EventDetailPageState extends State<EventDetailPage> {
   bool isLoading = false;
 
   // Método para abrir a URL usando o launchUrl

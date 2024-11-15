@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/app/data/models/event_model.dart';
-import '/app/pages/stores/evento_store.dart';
+import '/app/pages/stores/evento_store.dart'; // Certifique-se de que a classe EventoStore seja pública
 import '/app/data/http/http_client.dart';
 import '/app/data/repositories/event_repository.dart';
 
@@ -8,11 +8,11 @@ class FutureEventsSection extends StatefulWidget {
   const FutureEventsSection({super.key});
 
   @override
-  _FutureEventsSectionState createState() => _FutureEventsSectionState();
+  FutureEventsSectionState createState() => FutureEventsSectionState();
 }
 
-class _FutureEventsSectionState extends State<FutureEventsSection> {
-  late final EventoStore _eventoStore;
+class FutureEventsSectionState extends State<FutureEventsSection> {
+  late final EventoStore _eventoStore; // A classe EventoStore deve ser pública
   final Set<int> _favoriteIndices = {};
   int _visibleItemCount = 2;
 
