@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:xote_eventos/app/pages/search-page/event_card.dart';
 import '/app/data/models/event_model.dart';
-import '/app/pages/stores/evento_store.dart'; // Certifique-se de que a classe EventoStore seja pública
+import '/app/pages/stores/evento_store.dart';
 import '/app/data/http/http_client.dart';
 import '/app/data/repositories/event_repository.dart';
 
@@ -12,29 +13,71 @@ class FutureEventsSection extends StatefulWidget {
 }
 
 class FutureEventsSectionState extends State<FutureEventsSection> {
-  late final EventoStore _eventoStore; // A classe EventoStore deve ser pública
-  final Set<int> _favoriteIndices = {};
+  late final EventoStore _eventoStore;
   int _visibleItemCount = 2;
 
   @override
   void initState() {
     super.initState();
+    _initializeStore();
+    _fetchFutureEvents();
+  }
+
+  void _initializeStore() {
     final httpClient = HttpClient();
     final repository = EventRepository(client: httpClient);
     _eventoStore = EventoStore(repository: repository, client: httpClient);
-    _fetchFutureEvents();
   }
 
   Future<void> _fetchFutureEvents() async {
     await _eventoStore.getEventosByDateDesc();
   }
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
+  Widget _buildError() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(_eventoStore.erro.value, textAlign: TextAlign.center),
+          const SizedBox(height: 8.0),
+          ElevatedButton(
+            onPressed: _fetchFutureEvents,
+            child: const Text('Tentar Novamente'),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return const Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildEventList(List<EventModel> eventos) {
+    final isExpandable = _visibleItemCount < eventos.length;
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: isExpandable ? _visibleItemCount + 1 : eventos.length,
+      itemBuilder: (context, index) {
+        if (isExpandable && index == _visibleItemCount) {
+          return TextButton(
+            onPressed: () {
+              setState(() {
+                _visibleItemCount =
+                    (_visibleItemCount + 2).clamp(0, eventos.length);
+              });
+            },
+            child: const Text(
+              'Ver Mais',
+              style: TextStyle(color: Colors.blue),
+            ),
+          );
+        }
+
+        return EventCard(event: eventos[index]);
+      },
     );
   }
 
@@ -44,29 +87,15 @@ class FutureEventsSectionState extends State<FutureEventsSection> {
       valueListenable: _eventoStore.state,
       builder: (context, eventos, _) {
         if (_eventoStore.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildLoading();
         }
 
         if (_eventoStore.erro.value.isNotEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(_eventoStore.erro.value),
-                const SizedBox(height: 8.0),
-                ElevatedButton(
-                  onPressed: () {
-                    _fetchFutureEvents(); // Tentar novamente
-                  },
-                  child: const Text('Tentar Novamente'),
-                ),
-              ],
-            ),
-          );
+          return _buildError();
         }
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -79,144 +108,7 @@ class FutureEventsSectionState extends State<FutureEventsSection> {
                 ),
               ),
               const SizedBox(height: 8.0),
-              SizedBox(
-                height: 300,
-                child: ListView.builder(
-                  itemCount: (_visibleItemCount < eventos.length)
-                      ? _visibleItemCount + 1
-                      : eventos.length,
-                  itemBuilder: (context, index) {
-                    if (index == _visibleItemCount) {
-                      return TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _visibleItemCount =
-                                (_visibleItemCount + 2).clamp(0, eventos.length);
-                          });
-                        },
-                        child: const Text(
-                          'Ver Mais',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      );
-                    }
-
-                    final event = eventos[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 16.0),
-                      elevation: 4.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      color: const Color(0xFF000D1F),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.network(
-                                event.imageUrl,
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 100,
-                                    height: 100,
-                                    color: Colors.grey, // Placeholder em caso de erro
-                                    child: const Icon(
-                                      Icons.error,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    event.title,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    'Data: ${event.formattedDate}',
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  Text(
-                                    'Hora: ${event.time}',
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4.0),
-                                  const Text(
-                                    'Clique para mais detalhes',
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      color: Colors.blue,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    _favoriteIndices.contains(index)
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: _favoriteIndices.contains(index)
-                                        ? Colors.red
-                                        : Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      if (_favoriteIndices.contains(index)) {
-                                        _favoriteIndices.remove(index);
-                                        _showSnackBar('Evento removido dos favoritos');
-                                      } else {
-                                        _favoriteIndices.add(index);
-                                        _showSnackBar('Evento adicionado aos favoritos');
-                                      }
-                                    });
-                                  },
-                                ),
-                                const SizedBox(height: 30.0),
-                                Text(
-                                  event.pay ? 'Pago' : 'Gratuito',
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: event.pay ? Colors.red : Colors.green,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              _buildEventList(eventos),
             ],
           ),
         );

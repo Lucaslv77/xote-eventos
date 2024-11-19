@@ -10,10 +10,8 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determina a cor do cifrão com base no valor de 'pay'
     Color payColor = event.pay ? Colors.red : Colors.green;
 
-    // Estilos reutilizáveis
     const TextStyle greyTextStyle = TextStyle(color: Colors.grey);
     const TextStyle titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white);
     const TextStyle detailTextStyle = TextStyle(color: Colors.blue, fontWeight: FontWeight.w600);

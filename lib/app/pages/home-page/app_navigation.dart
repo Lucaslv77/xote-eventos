@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '/app/pages/home-page/home_page.dart';
 import '/app/pages/lib_page/lib_page.dart';
 import '/app/pages/search-page/search_page.dart';
-import '/app/pages/stores/evento_store.dart'; // Importar o store
-import '/app/data/repositories/event_repository.dart'; // Importar o repositório
-import '/app/data/http/http_client.dart'; // Importar o HttpClient
+import '/app/pages/stores/evento_store.dart'; 
+import '/app/data/repositories/event_repository.dart'; 
+import '/app/data/http/http_client.dart'; 
 
 class AppNavigation extends StatefulWidget {
   const AppNavigation({super.key});
@@ -14,27 +15,23 @@ class AppNavigation extends StatefulWidget {
 }
 
 class _AppNavigationState extends State<AppNavigation> {
-  late final EventoStore eventStore; // Declare o store como variável de estado
-  late final List<Widget> pages; // Declare a lista de páginas como variável de estado
+  late final EventoStore eventStore;
+  late final List<Widget> pages; 
 
   @override
   void initState() {
     super.initState();
 
-    // Inicialize o HttpClient
     final client = HttpClient();
 
-    // Inicialize o repositório
     final repository = EventRepository(client: client);
 
-    // Inicialize o store
     eventStore = EventoStore(repository: repository, client: client);
 
-    // Inicialize as páginas, passando o eventStore para aquelas que precisam
     pages = [
-      HomePage(eventStore: eventStore), // Passe o store aqui
-      const SearchPage(), // Atualize SearchPage se necessário
-      const LibPage(), // Atualize LibPage se necessário
+      HomePage(eventStore: eventStore), 
+      const SearchPage(), 
+      const LibPage(),
     ];
   }
 

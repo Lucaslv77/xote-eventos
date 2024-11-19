@@ -215,8 +215,8 @@ class SearchPageState extends State<SearchPage> {
                       onChanged: (String? newSort) {
                         setState(() {
                           _selectedSort = newSort ?? 'Mais Proximos';
-                          _applySorting(); // Aplica a ordenação ao selecionar um novo filtro
-                          _resetVisibleEvents(); // Reseta a lista visível após a ordenação
+                          _applySorting(); 
+                          _resetVisibleEvents();
                         });
                       },
                       items: <String>['Mais Proximos', 'Mais Distantes']

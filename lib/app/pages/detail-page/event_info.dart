@@ -33,7 +33,7 @@ class EventInfo extends StatelessWidget {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
-                  fontWeight: FontWeight.w500, // Peso médio para um toque de sofisticação
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -52,18 +52,18 @@ class EventInfo extends StatelessWidget {
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
-                  letterSpacing: 0.5,  // Espaçamento entre letras para clareza
+                  letterSpacing: 0.5, 
                 ),
               ),
               const SizedBox(height: 8.0),
               Text(
-                event.description,  // Exibe a descrição do evento
+                event.description, 
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16.0,
-                  height: 1.6, // Espaçamento entre linhas para facilitar a leitura
+                  height: 1.6, 
                 ),
-                textAlign: TextAlign.justify, // Ajustando o texto para alinhamento justificado
+                textAlign: TextAlign.justify, 
               ),
             ],
           ),
@@ -82,7 +82,7 @@ class EventInfo extends StatelessWidget {
           style: const TextStyle(
             color: Colors.white,
             fontSize: 14.0,
-            fontWeight: FontWeight.w400, // Peso de fonte mais leve
+            fontWeight: FontWeight.w400, 
           ),
         ),
       ],
