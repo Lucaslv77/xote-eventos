@@ -1,34 +1,34 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:xote_eventos/app/pages/search-page/event_card.dart';
 import 'package:xote_eventos/app/pages/stores/evento_store.dart';
 
 class PageTemplate extends StatelessWidget {
   final String eventType;
-  final EventoStore eventStore;
 
   const PageTemplate({
     super.key,
     required this.eventType,
-    required this.eventStore,
   });
 
   @override
   Widget build(BuildContext context) {
+    final eventStore = Provider.of<EventoStore>(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF02142F), 
+      backgroundColor: const Color(0xFF02142F),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF000D1F), 
+        backgroundColor: const Color(0xFF000D1F),
         title: Text(
           'Eventos: $eventType',
           style: const TextStyle(
-            fontSize: 28.0, 
+            fontSize: 28.0,
             fontWeight: FontWeight.bold,
             color: Color(0xFFFFB854),
-          ), 
+          ),
         ),
         elevation: 0,
-        centerTitle: true, 
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -42,13 +42,18 @@ class PageTemplate extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Erro ao carregar os eventos', style: TextStyle(color: Colors.white)));
-          } else if (eventStore.state.value.isEmpty) {
-            return const Center(child: Text('Nenhum evento encontrado', style: TextStyle(color: Colors.white)));
+            return const Center(
+                child: Text('Erro ao carregar os eventos',
+                    style: TextStyle(color: Colors.white)));
+          } else if (eventStore.state.isEmpty) {
+            return const Center(
+                child: Text('Nenhum evento encontrado',
+                    style: TextStyle(color: Colors.white)));
           }
 
-          final events = eventStore.state.value;
-          final filteredEvents = events.where((event) => event.type == eventType).toList();
+          final events = eventStore.state;
+          final filteredEvents =
+              events.where((event) => event.type == eventType).toList();
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -59,9 +64,9 @@ class PageTemplate extends StatelessWidget {
                 const Text(
                   'Eventos Disponiveis:',
                   style: TextStyle(
-                    fontSize: 20.0, 
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 255, 255, 255), 
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -72,8 +77,8 @@ class PageTemplate extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final event = filteredEvents[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0), 
-                        child: EventCard(event: event), 
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: EventCard(event: event),
                       );
                     },
                   ),

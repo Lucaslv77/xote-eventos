@@ -27,25 +27,26 @@ class LibPageState extends State<LibPage> {
       backgroundColor: const Color(0xFF02142F),
       appBar: AppBar(
         backgroundColor: const Color(0xFF000D1F),
-        title: const Text('Meus Eventos Favoritos', style: TextStyle(color: Colors.white)),
+        title: const Text('Meus Eventos Favoritos',
+            style: TextStyle(color: Colors.white)),
       ),
       body: Consumer<EventoStore>(
         builder: (context, store, child) {
-          if (store.isLoading.value) {
+          if (store.isLoading) {
             return const LoadingWidget(); // Carregamento de dados
           }
-          
-          if (store.erro.value.isNotEmpty) {
-            return CustomErrorWidget(errorMessage: store.erro.value); 
+
+          if (store.erro.isNotEmpty) {
+            return CustomErrorWidget(errorMessage: store.erro);
           }
 
-          final eventosFavoritos = store.state.value;
-          
+          final eventosFavoritos = store.state;
+
           if (eventosFavoritos.isEmpty) {
-            return _buildEmptyState(); 
+            return _buildEmptyState();
           }
 
-          return _buildEventList(eventosFavoritos); 
+          return _buildEventList(eventosFavoritos);
         },
       ),
     );
@@ -61,7 +62,10 @@ class LibPageState extends State<LibPage> {
           SizedBox(height: 20),
           Text(
             'Você ainda não tem eventos favoritos.',
-            style: TextStyle(color: Colors.white70, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.white70,
+                fontSize: 18,
+                fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           Text(

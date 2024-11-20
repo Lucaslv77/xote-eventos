@@ -1,32 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:xote_eventos/app/data/repositories/event_repository.dart';
+
+import 'package:xote_eventos/domain/repositories/repositories.dart';
+import 'package:xote_eventos/domain/models/models.dart';
+
 import '/app/data/http/exceptions.dart';
-import '/app/data/http/http_client.dart';
-import '/app/data/models/event_model.dart';
-import '/app/data/repositories/event_repository.dart';
 
 class EventoStore extends ChangeNotifier {
-  final IEventRepository repository;
-  final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
-  final ValueNotifier<List<EventModel>> state = ValueNotifier<List<EventModel>>([]);
-  final ValueNotifier<String> erro = ValueNotifier<String>('');
+  final IEventRepository repository = EventRepository();
 
-  EventoStore({required this.repository, required HttpClient client});
+  bool isLoading = false;
+  List<EventModel> state = [];
+  String erro = '';
 
   // Método genérico para obter eventos
-  Future<void> _fetchEvents(Future<List<EventModel>> Function() fetchFunction) async {
-    isLoading.value = true;
-    erro.value = ''; // Limpar erros anteriores
+  Future<void> _fetchEvents(
+    Future<List<EventModel>> Function() fetchFunction,
+  ) async {
+    isLoading = true;
+    erro = ''; // Limpar erros anteriores
+    notifyListeners();
 
     try {
       final result = await fetchFunction();
-      state.value = result;
+      state = result;
       notifyListeners(); // Notifique os ouvintes sobre a mudança de estado
     } on NotFoundException catch (e) {
-      erro.value = e.message;
+      erro = e.message;
+      notifyListeners();
     } catch (e) {
-      erro.value = e.toString();
+      erro = e.toString();
+      notifyListeners();
     } finally {
-      isLoading.value = false;
+      isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -38,7 +45,7 @@ class EventoStore extends ChangeNotifier {
   Future<void> getFavoritos() async {
     await _fetchEvents(repository.getFavoritos);
   }
-  
+
   // Método para obter eventos recentes
   Future<void> getRecentEventos() async {
     await _fetchEvents(repository.getRecentEvents);
@@ -61,7 +68,7 @@ class EventoStore extends ChangeNotifier {
 
   // Método para buscar eventos pelo título
   List<EventModel> searchEvents(String query) {
-    return state.value.where((event) {
+    return state.where((event) {
       return event.title.toLowerCase().contains(query.toLowerCase());
     }).toList();
   }
@@ -82,37 +89,45 @@ class EventoStore extends ChangeNotifier {
 
   // Método para favoritar um evento
   Future<void> favoriteEvent(String eventId) async {
-    isLoading.value = true;
-    erro.value = ''; // Limpar erros anteriores
+    isLoading = true;
+    erro = ''; // Limpar erros anteriores
+    notifyListeners();
 
     try {
       await repository.favoriteEvent(eventId);
       // Atualiza o estado se necessário
       notifyListeners(); // Notifique os ouvintes sobre a mudança de estado
     } on NotFoundException catch (e) {
-      erro.value = e.message;
+      erro = e.message;
+      notifyListeners();
     } catch (e) {
-      erro.value = e.toString();
+      erro = e.toString();
+      notifyListeners();
     } finally {
-      isLoading.value = false;
+      isLoading = false;
+      notifyListeners();
     }
   }
 
   // Método para desfavoritar um evento
   Future<void> unfavoriteEvent(String eventId) async {
-    isLoading.value = true;
-    erro.value = ''; // Limpar erros anteriores
+    isLoading = true;
+    erro = ''; // Limpar erros anteriores
+    notifyListeners();
 
     try {
       await repository.unfavoriteEvent(eventId);
       // Atualiza o estado se necessário
       notifyListeners(); // Notifique os ouvintes sobre a mudança de estado
     } on NotFoundException catch (e) {
-      erro.value = e.message;
+      erro = e.message;
+      notifyListeners();
     } catch (e) {
-      erro.value = e.toString();
+      erro = e.toString();
+      notifyListeners();
     } finally {
-      isLoading.value = false;
+      isLoading = false;
+      notifyListeners();
     }
   }
 }

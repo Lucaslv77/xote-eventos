@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:xote_eventos/app/pages/stores/evento_store.dart';
 import 'package:xote_eventos/app/widgets/pageTemplate.dart';
 import '/app/widgets/scroll_menu.dart';
 
 class MenuSection extends StatelessWidget {
-  final EventoStore eventStore;
-
-  const MenuSection({super.key, required this.eventStore});
+  const MenuSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final eventStore = Provider.of<EventoStore>(context);
+
     return FutureBuilder<void>(
       future: eventStore.getEventos(),
       builder: (context, snapshot) {
@@ -17,9 +18,10 @@ class MenuSection extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar os tipos de eventos'));
+          return const Center(
+              child: Text('Erro ao carregar os tipos de eventos'));
         }
-        final allEvents = eventStore.state.value;
+        final allEvents = eventStore.state;
         if (allEvents.isEmpty) {
           return const Center(child: Text('Nenhum tipo de evento encontrado'));
         }
@@ -44,9 +46,11 @@ class MenuSection extends StatelessWidget {
                 child: ScrollMenu(
                   menuItems: eventTypesList,
                   pages: eventTypesList.map((type) {
-                    return PageTemplate(eventType: type, eventStore: eventStore);
+                    return PageTemplate(
+                        eventType: type, eventStore: eventStore);
                   }).toList(),
-                  icons: List.generate(eventTypesList.length, (_) => Icons.event),
+                  icons:
+                      List.generate(eventTypesList.length, (_) => Icons.event),
                 ),
               ),
             ],

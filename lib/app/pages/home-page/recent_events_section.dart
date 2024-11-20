@@ -34,7 +34,7 @@ class RecentEventsSectionState extends State<RecentEventsSection> {
     return ValueListenableBuilder<List<EventModel>>(
       valueListenable: _eventoStore.state,
       builder: (context, eventos, _) {
-        if (_eventoStore.isLoading.value) {
+        if (_eventoStore.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 

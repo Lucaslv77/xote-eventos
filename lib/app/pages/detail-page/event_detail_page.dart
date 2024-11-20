@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '/app/data/models/event_model.dart';
+
+import 'package:xote_eventos/domain/models/models.dart';
+
 import '/app/pages/detail-page/event_image.dart';
 import '/app/pages/detail-page/event_info.dart';
 import '/app/pages/detail-page/location_button.dart';
@@ -59,7 +61,10 @@ class EventDetailPageState extends State<EventDetailPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 widget.event.title,
-                style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
             ),
             const SizedBox(height: 8.0),
@@ -69,7 +74,9 @@ class EventDetailPageState extends State<EventDetailPage> {
             const SizedBox(height: 8.0),
             _buildInfoCard(
               'Preço:',
-              widget.event.pay ? 'R\$ ${widget.event.price.toStringAsFixed(2)}' : 'Gratuito',
+              widget.event.pay
+                  ? 'R\$ ${widget.event.price.toStringAsFixed(2)}'
+                  : 'Gratuito',
             ),
             const SizedBox(height: 8.0),
             Padding(
@@ -78,7 +85,10 @@ class EventDetailPageState extends State<EventDetailPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const ShareButton(),
-                  LocationButton(event: widget.event, isLoading: isLoading, launchURL: _launchURL),
+                  LocationButton(
+                      event: widget.event,
+                      isLoading: isLoading,
+                      launchURL: _launchURL),
                 ],
               ),
             ),
@@ -101,10 +111,13 @@ class EventDetailPageState extends State<EventDetailPage> {
           children: [
             Text(
               '$title ',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
             Expanded(
-              child: Text(content, style: const TextStyle(color: Colors.white), overflow: TextOverflow.ellipsis),
+              child: Text(content,
+                  style: const TextStyle(color: Colors.white),
+                  overflow: TextOverflow.ellipsis),
             ),
           ],
         ),

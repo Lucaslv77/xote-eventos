@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:xote_eventos/domain/models/models.dart';
+
 import 'package:xote_eventos/app/pages/search-page/event_card.dart';
-import '/app/data/models/event_model.dart';
 import '/app/pages/stores/evento_store.dart';
-import '/app/data/http/http_client.dart';
-import '/app/data/repositories/event_repository.dart';
 
 class FutureEventsSection extends StatefulWidget {
   const FutureEventsSection({super.key});
@@ -16,19 +17,6 @@ class FutureEventsSectionState extends State<FutureEventsSection> {
   late final EventoStore _eventoStore;
   int _visibleItemCount = 2;
 
-  @override
-  void initState() {
-    super.initState();
-    _initializeStore();
-    _fetchFutureEvents();
-  }
-
-  void _initializeStore() {
-    final httpClient = HttpClient();
-    final repository = EventRepository(client: httpClient);
-    _eventoStore = EventoStore(repository: repository, client: httpClient);
-  }
-
   Future<void> _fetchFutureEvents() async {
     await _eventoStore.getEventosByDateDesc();
   }
@@ -38,7 +26,7 @@ class FutureEventsSectionState extends State<FutureEventsSection> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(_eventoStore.erro.value, textAlign: TextAlign.center),
+          Text(_eventoStore.erro, textAlign: TextAlign.center),
           const SizedBox(height: 8.0),
           ElevatedButton(
             onPressed: _fetchFutureEvents,
@@ -83,36 +71,25 @@ class FutureEventsSectionState extends State<FutureEventsSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<List<EventModel>>(
-      valueListenable: _eventoStore.state,
-      builder: (context, eventos, _) {
-        if (_eventoStore.isLoading.value) {
-          return _buildLoading();
-        }
+    final _eventoStore = Provider.of<EventoStore>(context);
 
-        if (_eventoStore.erro.value.isNotEmpty) {
-          return _buildError();
-        }
-
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Eventos Futuros',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22.0,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8.0),
-              _buildEventList(eventos),
-            ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Eventos Futuros',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22.0,
+              color: Colors.white,
+            ),
           ),
-        );
-      },
+          const SizedBox(height: 8.0),
+          _buildEventList(_eventoStore.state),
+        ],
+      ),
     );
   }
 }

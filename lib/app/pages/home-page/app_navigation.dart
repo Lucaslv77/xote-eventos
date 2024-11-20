@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '/app/pages/home-page/home_page.dart';
 import '/app/pages/lib_page/lib_page.dart';
 import '/app/pages/search-page/search_page.dart';
-import '/app/pages/stores/evento_store.dart'; 
-import '/app/data/repositories/event_repository.dart'; 
-import '/app/data/http/http_client.dart'; 
+import '/app/pages/stores/evento_store.dart';
+import '/app/data/repositories/event_repository.dart';
+import '/app/data/http/http_client.dart';
 
 class AppNavigation extends StatefulWidget {
   const AppNavigation({super.key});
@@ -16,21 +16,15 @@ class AppNavigation extends StatefulWidget {
 
 class _AppNavigationState extends State<AppNavigation> {
   late final EventoStore eventStore;
-  late final List<Widget> pages; 
+  late final List<Widget> pages;
 
   @override
   void initState() {
     super.initState();
 
-    final client = HttpClient();
-
-    final repository = EventRepository(client: client);
-
-    eventStore = EventoStore(repository: repository, client: client);
-
     pages = [
-      HomePage(eventStore: eventStore), 
-      const SearchPage(), 
+      HomePage(),
+      const SearchPage(),
       const LibPage(),
     ];
   }

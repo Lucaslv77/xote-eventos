@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+
+import 'package:xote_eventos/domain/models/models.dart';
+
 import 'package:flutter/material.dart';
-import '/app/data/models/event_model.dart';
 import '/app/pages/detail-page/event_detail_page.dart';
 
 class EventCard extends StatelessWidget {
@@ -13,14 +15,17 @@ class EventCard extends StatelessWidget {
     Color payColor = event.pay ? Colors.red : Colors.green;
 
     const TextStyle greyTextStyle = TextStyle(color: Colors.grey);
-    const TextStyle titleTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white);
-    const TextStyle detailTextStyle = TextStyle(color: Colors.blue, fontWeight: FontWeight.w600);
+    const TextStyle titleTextStyle = TextStyle(
+        fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white);
+    const TextStyle detailTextStyle =
+        TextStyle(color: Colors.blue, fontWeight: FontWeight.w600);
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => EventDetailPage(event: event)),
+          MaterialPageRoute(
+              builder: (context) => EventDetailPage(event: event)),
         );
       },
       child: Card(
@@ -60,11 +65,13 @@ class EventCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(event.title, style: titleTextStyle),
-                        Text('Data: ${event.formattedDate}', style: greyTextStyle),
+                        Text('Data: ${event.formattedDate}',
+                            style: greyTextStyle),
                         Text('Local: ${event.local}', style: greyTextStyle),
                         Text('Cidade: ${event.city}', style: greyTextStyle),
                         const SizedBox(height: 8),
-                        const Text('Clique para mais detalhes', style: detailTextStyle),
+                        const Text('Clique para mais detalhes',
+                            style: detailTextStyle),
                       ],
                     ),
                   ),
@@ -77,7 +84,7 @@ class EventCard extends StatelessWidget {
                   '\$', // Símbolo de cifrão
                   style: TextStyle(
                     color: payColor,
-                    fontSize: 24, 
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
